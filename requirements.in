@@ -3,3 +3,4 @@ mypy~=0.950
 numpy>=1.23.2
 scikit-learn~=1.0
 jupyter==1.0.0
+matplotlib~=3.0
