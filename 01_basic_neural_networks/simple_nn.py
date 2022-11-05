@@ -10,10 +10,19 @@ def _sigmoid(z):
 class OneLayerNN:
     def __init__(self):
         self.params = dict()
-        self.learning_rate = []
+        self.learning_curve = []
 
     def _layer_sizes(self, X, y, hidden_units: int = 4):
-        """Define layer sizes of network."""
+        """Define layer sizes of network.
+
+        :param X:
+            Input layer, `(n_x, m)` array with `n_x` as nr of features
+            and `m` as nr of examples.
+        :param y:
+            Output layer, `(1, m)` array with binary outcomes.
+        :returns:
+            Layer sizes of input, hidden, and output layer.
+        """
         # Set size for input, hidden, and output layer
         n_x = X.shape[0]
         n_h = hidden_units
@@ -22,7 +31,17 @@ class OneLayerNN:
         return n_x, n_h, n_y
 
     def _init_params(self, n_x, n_h, n_y):
-        """Initialize parameters of layers."""
+        """Initialize parameters.
+
+        :param n_x:
+            Size of input layer, this equals to nr of features.
+        :param n_h:
+            Size of hidden layer.
+        :param n_y:
+            Size of output layer.
+        :returns:
+            Dictionary with initialized weights and biases for layers.
+        """
         W1 = np.random.randn(n_h, n_x) * 0.01
         b1 = np.zeros((n_h, 1))
         W2 = np.random.randn(n_y, n_h) * 0.01
@@ -40,6 +59,13 @@ class OneLayerNN:
         """Forward propagation in network.
 
         Hidden layer uses `tanh` activation, output layers uses `sigmoid` activation.
+
+        :param X:
+            Input matrix on dimension `(n_x, m)`.
+        :param params:
+            Dictionary with weights and bias for layers.
+        :returns:
+            Activation of last layer and dictionary with activations and linear functions.
         """
         # Retrieve parameters
         W1 = params['W1']
@@ -62,7 +88,15 @@ class OneLayerNN:
         return A2, cache
 
     def _cost(self, A2, y):
-        """Compute cost of network."""
+        """Compute cost of network.
+
+        :param A2:
+            Activation of output layer.
+        :param y:
+            Output array on dimension `(1, m)`.
+        :returns:
+            Cost of activation.
+        """
         # Nr of examples
         m = float(y.shape[1])
 
@@ -76,7 +110,21 @@ class OneLayerNN:
         return cost
 
     def _backward_prop(self, params, cache, X, y):
-        """Backward propagation in network."""
+        """Backward propagation in network.
+
+        Derivatives are based on `tanh` and `sigmoid` activation functions.
+
+        :param params:
+            Dictionary with weights and biases of layers.
+        :param cache:
+            Dictionary with linear combinations and activations.
+        :param X:
+            Input features array.
+        :param y:
+            Output array.
+        :returns:
+            Dictionary with gradients of weights and biases.
+        """
         # Nr of examples
         m = float(X.shape[1])
 
@@ -104,7 +152,17 @@ class OneLayerNN:
         return grads
 
     def _upgrade_params(self, params, grads, learning_rate: float = 0.1):
-        """Update parameters using gradient descent."""
+        """Update parameters using gradient descent.
+
+        :param params:
+            Dictionary with weights and biases.
+        :param grads:
+            Dictionary with gradients of weights and biases.
+        :param learning_rate:
+            Learning rate used in gradient descent.
+        :returns:
+            Dictionary with updated weights and biases.
+        """
         # Retrieve weights and biases
         W1 = np.array([i for i in params['W1']])
         b1 = params['b1']
@@ -131,7 +189,23 @@ class OneLayerNN:
         return params
 
     def call(self, X, y, n_h: int = 4, num_iter: int = 10000, learning_rate: float = 0.1, print_cost: bool = False):
-        """Train network with 1 hidden layer."""
+        """Train network with 1 hidden layer.
+
+        :param X:
+            Input features array.
+        :param y:
+            Output array.
+        :param n_h:
+            Units in hidden layer.
+        :param num_iter:
+            Nr of iterations of gradient descent.
+        :param learning_rate:
+            Learning rate used in gradient descent.
+        :param print_cost:
+            If true, print cost.
+        :returns:
+            Self.
+        """
         np.random.seed(42)
 
         # Input/Output layers
@@ -148,7 +222,7 @@ class OneLayerNN:
             # Cost
             cost = self._cost(A2, y)
             if i % 100 == 0:
-                costs.append(cost)
+                costs.append([i, cost])
             if print_cost and i % 1000 == 0:
                 print(f'Cost after iteration {i}: {cost}')
 
@@ -161,10 +235,19 @@ class OneLayerNN:
         # Save learned parameters
         self.params = params
 
+        # Save learning curve
+        self.learning_curve = np.array(costs).reshape(-1, 2)
+
         return self
 
     def _predict(self, X):
-        """Use learned parameters for prediction."""
+        """Use learned parameters for prediction.
+
+        :param X:
+            Input features array.
+        :returns:
+            Array with probabilities from last activation.
+        """
         # Verify learned parameters exist
         if self.params == dict():
             err_msg = 'No learned parameters. Train model using `.call()` method.'
@@ -176,7 +259,13 @@ class OneLayerNN:
         return A2
 
     def predict(self, X):
-        """Binary prediction."""
+        """Binary prediction.
+
+        :param X:
+            Input features array.
+        :returns:
+            Binary array from last activation.
+        """
         y_pred = self._predict(X)
         y_pred = (y_pred > 0.5)
         y_pred = np.array(y_pred).reshape(-1, 1)
