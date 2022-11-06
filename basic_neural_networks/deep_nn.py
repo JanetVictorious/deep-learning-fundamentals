@@ -1,6 +1,6 @@
 import numpy as np
 
-from utils.dnn_utils import sigmoid, relu, sigmoid_backward, relu_backward
+from basic_neural_networks.utils.dnn_utils import sigmoid, relu, sigmoid_backward, relu_backward
 
 
 class DeepNNModel:
@@ -230,6 +230,7 @@ if __name__ == '__main__':
 
     # Instantiate model
     model = DeepNNModel()
+    layer_dims = [X_train.shape[0], 20, 7, 5, y_train.shape[0]]  # 4-layer model
 
     # Fit model
     model.call(X_train, y_train, learning_rate=0.1, print_cost=True)
