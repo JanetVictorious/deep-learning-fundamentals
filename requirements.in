@@ -4,3 +4,4 @@ numpy>=1.23.2
 scikit-learn~=1.0
 jupyterlab~=3.0
 matplotlib~=3.0
+h5py~=3.0
