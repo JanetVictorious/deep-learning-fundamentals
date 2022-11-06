@@ -1,6 +1,6 @@
 import numpy as np
 
-from basic_neural_networks.utils.dnn_utils import sigmoid, relu, sigmoid_backward, relu_backward
+from utils.dnn_utils import sigmoid, relu, sigmoid_backward, relu_backward
 
 
 class DeepNNModel:
