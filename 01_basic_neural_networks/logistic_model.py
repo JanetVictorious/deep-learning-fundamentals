@@ -139,3 +139,31 @@ class LogisticModel:
     def predict_proba(self, X):
         """Predict probabilities."""
         return self._predict(X)
+
+
+if __name__ == '__main__':
+    """Debugging"""
+    import sklearn.datasets as dt
+    from sklearn.model_selection import train_test_split
+    from sklearn.metrics import log_loss, f1_score, accuracy_score
+
+    # Generate synthetic data
+    X, y = dt.make_classification(n_samples=2000, n_features=4, n_informative=2, n_redundant=1, random_state=42)
+
+    # Train/Test split
+    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+
+    # Instantiate model
+    model = LogisticModel()
+
+    # Fit model
+    model.fit(X_train, y_train, learning_rate=0.01, print_cost=False)
+
+    # Predict on test data
+    y_pred = model.predict(X_test)
+    y_pred_proba = model.predict_proba(X_test)
+
+    # Evaluation
+    print(f'Accuracy: {accuracy_score(y_test, y_pred)}')
+    print(f'Logloss: {log_loss(y_test, y_pred_proba)}')
+    print(f'F1 score: {f1_score(y_test, y_pred)}')

@@ -268,9 +268,43 @@ class OneLayerNN:
         """
         y_pred = self._predict(X)
         y_pred = (y_pred > 0.5)
-        y_pred = np.array(y_pred).reshape(-1, 1)
+        y_pred = np.array(y_pred, dtype=int)
         return y_pred
 
     def predict_proba(self, X):
         """Predict probabilities."""
         return self._predict(X)
+
+
+if __name__ == '__main__':
+    """Debugging"""
+    import sklearn.datasets as dt
+    from sklearn.model_selection import train_test_split
+    from sklearn.metrics import log_loss, f1_score, accuracy_score
+
+    # Generate synthetic data
+    X, y = dt.make_classification(n_samples=2000, n_features=4, n_informative=2, n_redundant=1, random_state=42)
+
+    # Train/Test split
+    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+
+    # Transpose data
+    X_train = X_train.T
+    X_test = X_test.T
+    y_train = y_train.reshape(1, -1)
+    y_test = y_test.reshape(-1, 1)
+
+    # Instantiate model
+    model = OneLayerNN()
+
+    # Fit model
+    model.call(X_train, y_train, learning_rate=0.1, print_cost=True)
+
+    # Predict on test data
+    y_pred = model.predict(X_test)
+    y_pred_proba = model.predict_proba(X_test)
+
+    # Evaluation
+    print(f'Accuracy: {accuracy_score(y_test, y_pred.T)}')
+    print(f'Logloss: {log_loss(y_test, y_pred_proba.T)}')
+    print(f'F1 score: {f1_score(y_test, y_pred.T)}')
