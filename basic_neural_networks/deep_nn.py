@@ -71,7 +71,7 @@ class DeepNNModel:
             caches.append(cache)
 
         # Forward propagation in output layer
-        AL, cache = self._activation_forward(A_prev,
+        AL, cache = self._activation_forward(A,
                                              params['W' + str(L)],
                                              params['b' + str(L)],
                                              activation='sigmoid')
@@ -153,7 +153,7 @@ class DeepNNModel:
 
     def _upgrade_params(self, params, grads, learning_rate: float = 0.1):
         """Upgrade parameters using gradient descent."""
-        parameters = [i for i in params]
+        parameters = {i: v for i, v in params.items()}
         L = len(parameters) // 2
 
         for i in range(L):
@@ -176,7 +176,7 @@ class DeepNNModel:
             if i % 100 == 0:
                 costs.append([i, cost])
             if print_cost and i % 1000 == 0:
-                print(f'Cost after iteration {i}: cost')
+                print(f'Cost after iteration {i}: {cost}')
 
             grads = self._backward_prop(AL, y, caches)
 
@@ -217,7 +217,7 @@ if __name__ == '__main__':
     from sklearn.metrics import log_loss, f1_score, accuracy_score
 
     # Generate synthetic data
-    X, y = dt.make_classification(n_samples=2000, n_features=4, n_informative=2, n_redundant=1, random_state=42)
+    X, y = dt.make_classification(n_samples=2000, n_features=200, n_informative=100, n_redundant=100, random_state=42)
 
     # Train/Test split
     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
@@ -233,7 +233,7 @@ if __name__ == '__main__':
     layer_dims = [X_train.shape[0], 20, 7, 5, y_train.shape[0]]  # 4-layer model
 
     # Fit model
-    model.call(X_train, y_train, learning_rate=0.1, print_cost=True)
+    model.call(X_train, y_train, layer_dims, learning_rate=0.01, print_cost=True)
 
     # Predict on test data
     y_pred = model.predict(X_test)
