@@ -43,7 +43,7 @@ def cluster_dataset_2():
         if j == 0:
             x, _ = make_blobs(n_samples=N, centers=centers, cluster_std=0.4)
         else:
-            t = np.linspace(0, np.pi , N) + np.random.randn(N) * 0.2  # Theta
+            t = np.linspace(0, np.pi, N) + np.random.randn(N) * 0.2  # Theta
             r = 1.1 + np.random.randn(N) * 0.2  # Radius
             x = np.c_[r * np.cos(t), r * np.sin(t)]
         X[ix] = x
@@ -71,7 +71,7 @@ def cluster_dataset_3():
         if j == 0:
             x, _ = make_blobs(n_samples=N, centers=centers, cluster_std=0.4)
         else:
-            t = np.linspace(0, 2.0 * np.pi , N) + np.random.randn(N) * 0.2  # Theta
+            t = np.linspace(0, 2.0 * np.pi, N) + np.random.randn(N) * 0.2  # Theta
             r = 1.1 + np.random.randn(N) * 0.2  # Radius
             x = np.c_[r * np.cos(t), r * np.sin(t)]
         X[ix] = x
