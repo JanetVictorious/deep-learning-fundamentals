@@ -188,6 +188,27 @@ class DeepNNModel:
 
         return self
 
+    def _predict(self, X):
+        """Use learned parameters for prediction."""
+        if self.params == dict():
+            err_msg = 'No learned parameters. Train model using `.cal()` method.'
+            raise ValueError(err_msg)
+
+        AL, _ = self._forward_prop(X, self.params)
+
+        return AL
+
+    def predict(self, X):
+        """Binary prediction."""
+        y_pred = self._predict(X)
+        y_pred = (y_pred > 0.5)
+        y_pred = np.array(y_pred, dtype=int)
+        return y_pred
+
+    def predict_proba(self, X):
+        """Predict probabilities."""
+        return self._predict(X)
+
 
 if __name__ == '__main__':
     """Debugging"""
