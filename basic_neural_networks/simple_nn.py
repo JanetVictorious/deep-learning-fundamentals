@@ -223,8 +223,8 @@ class OneLayerNN:
             cost = self._cost(A2, y)
             if i % 100 == 0:
                 costs.append([i, cost])
-            if print_cost and i % 1000 == 0:
-                print(f'Cost after iteration {i}: {cost}')
+                if print_cost:
+                    print(f'Cost after iteration {i}: {cost}')
 
             # Backward propagation
             grads = self._backward_prop(params, cache, X, y)
@@ -298,7 +298,7 @@ if __name__ == '__main__':
     model = OneLayerNN()
 
     # Fit model
-    model.call(X_train, y_train, learning_rate=0.1, print_cost=True)
+    model.call(X_train, y_train, num_iter=2500, learning_rate=0.1, print_cost=True)
 
     # Predict on test data
     y_pred = model.predict(X_test)
