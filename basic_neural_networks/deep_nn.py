@@ -1,6 +1,11 @@
 import numpy as np
 
-from utils.dnn_utils import sigmoid, relu, tanh, sigmoid_backward, relu_backward, tanh_backward
+from utils.dnn_utils import (
+    leaky_relu, leaky_relu_backward,
+    relu, relu_backward,
+    sigmoid, sigmoid_backward,
+    tanh, tanh_backward,
+)
 
 
 class DeepNNModel:
@@ -37,6 +42,8 @@ class DeepNNModel:
             A, activation_cache = tanh(Z)
         elif activation == 'relu':
             A, activation_cache = relu(Z)
+        elif activation == 'leaky_relu':
+            A, activation_cache = leaky_relu(Z)
         else:
             err_msg = f'Activation {activation} is not implemented.'
             raise ValueError(err_msg)
@@ -104,6 +111,8 @@ class DeepNNModel:
             dZ = tanh_backward(dA, activation_cache)
         elif activation == 'relu':
             dZ = relu_backward(dA, activation_cache)
+        elif activation == 'leaky_relu':
+            dZ = leaky_relu_backward(dA, activation_cache)
         else:
             err_msg = f'Activation {activation} is not implemented.'
             raise ValueError(err_msg)
@@ -228,11 +237,11 @@ class DeepNNModel:
 if __name__ == '__main__':
     """Debugging"""
     import sklearn.datasets as dt
+    from sklearn.metrics import accuracy_score, f1_score, log_loss
     from sklearn.model_selection import train_test_split
-    from sklearn.metrics import log_loss, f1_score, accuracy_score
 
     # Generate synthetic data
-    X, y = dt.make_classification(n_samples=2000, n_features=4, n_informative=2, n_redundant=1, random_state=42)
+    X, y = dt.make_classification(n_samples=2000, n_features=20, n_informative=10, n_redundant=1, random_state=42)
 
     # Train/Test split
     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
@@ -245,11 +254,11 @@ if __name__ == '__main__':
 
     # Instantiate model
     model = DeepNNModel()
-    layer_dims = [X_train.shape[0], 4, y_train.shape[0]]
+    layer_dims = [X_train.shape[0], 7, 5, y_train.shape[0]]
 
     # Fit model
     model.call(X_train, y_train, layer_dims, hidden_activation='relu',
-               num_iter=2500, learning_rate=0.1, print_cost=True)
+               num_iter=2500, learning_rate=0.5, print_cost=True)
 
     # Predict on test data
     y_pred = model.predict(X_test)
