@@ -3,20 +3,28 @@ import numpy as np
 from utils.dnn_utils import sigmoid, relu, tanh, sigmoid_backward, relu_backward, tanh_backward
 
 
-class DeepNNModel:
+class DeepNNModelInitialization:
     def __init__(self):
         self.layer_dims = []
         self.hidden_activation = None
         self.params = dict()
         self.learning_curve = []
 
-    def _init_params(self, layer_dims):
+    def _init_params(self, layer_dims, initialization='random'):
         """Initialize parameters."""
         params = dict()
         L = len(layer_dims)
 
         for i in range(1, L):
-            params['W' + str(i)] = np.random.randn(layer_dims[i], layer_dims[i - 1]) * 0.01
+            # Select initialization
+            if initialization == 'zero':
+                factor = 0.0
+            elif initialization == 'random':
+                factor = 0.01
+            elif initialization == 'he':
+                factor = np.sqrt(2 / layer_dims[i - 1])
+
+            params['W' + str(i)] = np.random.randn(layer_dims[i], layer_dims[i - 1]) * factor
             params['b' + str(i)] = np.zeros((layer_dims[i], 1))
 
             assert params['W' + str(i)].shape == (layer_dims[i], layer_dims[i - 1])

@@ -30,4 +30,4 @@ See notebook [one_hidden_nn](./one_hidden_nn.ipynb) for example usage. The model
 
 In [deep_nn.py](./deep_nn.py) is the logic for a deep neural network implemented. The network can be implemented with multiple layers and units by providing a variable `layer_dims`. The methods are structured in a similar fashion as to [simple_nn.py](./simple_nn.py).
 
-See notebook ... for example usage.
+See notebook [cat_vs_nocat_dnn](./cat_vs_nocat_dnn.ipynb) for example usage.
