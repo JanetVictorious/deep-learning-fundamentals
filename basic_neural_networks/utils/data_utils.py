@@ -111,6 +111,41 @@ def cluster_dataset_4():
     return X, y
 
 
+def cluster_dataset_5():
+    """Generate two clusters for classification."""
+    for i in range(2):
+        np.random.seed(i + 1)
+        if i == 0:
+            m = 400  # Number of examples
+        else:
+            m = 200
+        N = int(m / 2)  # Number of points per class
+        D = 2  # Number of features
+        X = np.zeros((m, D))  # Feature matrix
+        y = np.zeros((m, 1), dtype='uint8')  # Label array
+
+        # Generate clusters
+        for j in range(2):
+            ix = range(N * j, N * (j + 1))
+            if j == 0:
+                t = np.linspace(5 * np.pi / 4, 9 * np.pi / 4, N) + np.random.randn(N) * 0.2  # Theta
+            else:
+                t = np.linspace(np.pi / 4, 5 * np.pi / 4, N) + np.random.randn(N) * 0.2  # Theta
+            r = 0.55 + np.random.randn(N) * 0.2  # Radius
+            x = np.c_[r * np.cos(t), r * np.sin(t)]
+            X[ix] = x
+            y[ix] = j % 2
+
+        if i == 0:
+            X_train = X.T
+            y_train = y.T
+        else:
+            X_test = X.T
+            y_test = y.T
+
+    return X_train, y_train, X_test, y_test
+
+
 def plot_decision_boundary(model, X, y):
     # Set min and max values and give it some padding
     x_min, x_max = X[0, :].min() - 1, X[0, :].max() + 1

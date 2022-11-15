@@ -36,7 +36,7 @@ def leaky_relu(z):
 def sigmoid_backward(da, activation_cache):
     """Backward propagation of sigmoid unit."""
     z = activation_cache
-    s = 1 / (1 + np.exp(-z))
+    s = 1.0 / (1.0 + np.exp(-z))
     dz = da * s * (1 - s)
     assert dz.shape == z.shape
     return dz
