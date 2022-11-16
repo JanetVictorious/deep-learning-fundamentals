@@ -135,7 +135,7 @@ class DeepNNModelReg:
 
         return dA_prev, dW, db
 
-    def _activation_backward(self, dA, cache, activation, lbd, keep_prob):
+    def _activation_backward(self, dA, cache, D_prev, activation, lbd, keep_prob):
         linear_cache, activation_cache, _ = cache
         if activation == 'sigmoid':
             dZ = sigmoid_backward(dA, activation_cache)
@@ -167,7 +167,13 @@ class DeepNNModelReg:
 
         # Derivatives from output layer
         cache = caches[L - 1]
-        dA_prev, dW, db = self._activation_backward(dAL, cache, 'sigmoid', lbd, keep_prob)
+
+        # Get drop-out matrix from previous layer
+        cache_prev = caches[L - 2]
+        _, _, D_prev = cache_prev
+
+        # Backward activation
+        dA_prev, dW, db = self._activation_backward(dAL, cache, D_prev, 'sigmoid', lbd, keep_prob)
         grads['dA' + str(L - 1)] = dA_prev
         grads['dW' + str(L)] = dW
         grads['db' + str(L)] = db
@@ -175,7 +181,10 @@ class DeepNNModelReg:
         # Derivatives of hidden layers
         for i in reversed(range(1, L)):
             cache = caches[i - 1]
-            dA_prev, dW, db = self._activation_backward(dA_prev, cache, hidden_activation, lbd, keep_prob)
+            # Get drop-out matrix from previous layer
+            cache_prev = caches[i - 2]
+            _, _, D_prev = cache_prev
+            dA_prev, dW, db = self._activation_backward(dA_prev, cache, D_prev, hidden_activation, lbd, keep_prob)
             grads['dA' + str(i - 1)] = dA_prev
             grads['dW' + str(i)] = dW
             grads['db' + str(i)] = db
@@ -252,7 +261,7 @@ class DeepNNModelReg:
             raise ValueError(err_msg)
 
         # Forward prop with learned parameters
-        A2, _ = self._forward_prop(X, self.params, self.hidden_activation)
+        A2, _ = self._forward_prop(X, self.params, self.hidden_activation, 1.0)
 
         return A2
 
@@ -298,14 +307,14 @@ if __name__ == '__main__':
 
     # Instantiate model
     model = DeepNNModelReg()
-    layer_dims = [X_train.shape[0], 2, 2, y_train.shape[0]]
+    layer_dims = [X_train.shape[0], 3, 2, y_train.shape[0]]
 
     # Fit model
     model.call(X_train, y_train, layer_dims, hidden_activation='relu', lbd=0.0, keep_prob=1.0,
                num_iter=2500, learning_rate=0.5, print_cost=True)
 
-    # # Predict on test data
-    # y_pred = model.predict(X_test)
+    # Predict on test data
+    y_pred = model.predict(X_train)
     # y_pred_proba = model.predict_proba(X_test)
 
     # # Evaluation
