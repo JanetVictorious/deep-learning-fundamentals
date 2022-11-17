@@ -31,3 +31,26 @@ See notebook [one_hidden_nn](./one_hidden_nn.ipynb) for example usage. The model
 In [deep_nn.py](./deep_nn.py) is the logic for a deep neural network implemented. The network can be implemented with multiple layers and units by providing a variable `layer_dims`. The methods are structured in a similar fashion as to [simple_nn.py](./simple_nn.py).
 
 See notebook [cat_vs_nocat_dnn](./cat_vs_nocat_dnn.ipynb) for example usage.
+
+---
+
+## Weight initialization
+
+In [dnn_w_initialization.py](./dnn_w_initialization.py) is the logic for a deep neural network with different approaches for initializing the weights. Three methods are implemented:
+
+* zero initialization, setting all weights to zero
+* random initialization, setting weights randomly from a normal distribution and scaling with 0.01
+* He initialization, setting weights randomly and scaling with the square root of 2 divided by the nr of nodes in the previous layer
+
+See notebook [dnn_w_initialization](./dnn_w_initialization.ipynb) for example usage.
+
+---
+
+## Regularization
+
+In [dnn_w_regularization.py](./dnn_w_regularization.py) is the logic for a deep neural network with regularization techniques implemented. Two types of regularization is available:
+
+* L2 regularization, penalizing weights in the cost function
+* drop-out, randomly skip connections in a hidden layer
+
+See notebook [dnn_w_regularization](./dnn_w_regularization.ipynb) for example usage.
