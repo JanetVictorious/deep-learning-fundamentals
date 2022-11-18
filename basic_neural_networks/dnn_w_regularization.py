@@ -290,20 +290,16 @@ if __name__ == '__main__':
     from sklearn.model_selection import train_test_split
 
     # Generate synthetic data
-    # X, y = dt.make_classification(n_samples=2000, n_features=20, n_informative=10, n_redundant=1, random_state=42)
-    X, y = dt.make_classification(n_samples=2, n_features=2, n_informative=2, n_redundant=0, random_state=42)
+    X, y = dt.make_classification(n_samples=2000, n_features=20, n_informative=10, n_redundant=1, random_state=42)
 
-    # # Train/Test split
-    # X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+    # Train/Test split
+    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
 
-    # # Transpose data
-    # X_train = X_train.T
-    # X_test = X_test.T
-    # y_train = y_train.reshape(1, -1)
-    # y_test = y_test.reshape(-1, 1)
-
-    X_train = X.T
-    y_train = y.reshape(1, -1)
+    # Transpose data
+    X_train = X_train.T
+    X_test = X_test.T
+    y_train = y_train.reshape(1, -1)
+    y_test = y_test.reshape(-1, 1)
 
     # Instantiate model
     model = DeepNNModelReg()
@@ -315,9 +311,9 @@ if __name__ == '__main__':
 
     # Predict on test data
     y_pred = model.predict(X_train)
-    # y_pred_proba = model.predict_proba(X_test)
+    y_pred_proba = model.predict_proba(X_test)
 
-    # # Evaluation
-    # print(f'Accuracy: {accuracy_score(y_test, y_pred.T)}')
-    # print(f'Logloss: {log_loss(y_test, y_pred_proba.T)}')
-    # print(f'F1 score: {f1_score(y_test, y_pred.T)}')
+    # Evaluation
+    print(f'Accuracy: {accuracy_score(y_test, y_pred.T)}')
+    print(f'Logloss: {log_loss(y_test, y_pred_proba.T)}')
+    print(f'F1 score: {f1_score(y_test, y_pred.T)}')
