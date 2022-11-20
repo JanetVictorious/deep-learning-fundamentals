@@ -4,10 +4,6 @@
 #
 #    pip-compile requirements-dev.in
 #
---trusted-host pypi.python.org
---trusted-host pypi.org
---trusted-host files.pythonhosted.org
-
 attrs==22.1.0
     # via
     #   -c requirements.txt

@@ -69,13 +69,46 @@ class TestBaseNetwork:
         assert round(bn._cost(AL2, y2), 5) == 0.10536
 
     def test_linear_backward(self):
-        assert True
+        bn = BaseNetwork()
+
+        dZ = np.random.randn(4, 3)
+        A_prev = np.random.randn(2, 3)
+        W = np.random.randn(4, 2)
+        b = np.random.randn(4, 1)
+
+        dA_prev, dW, db = bn._linear_backward(dZ, (A_prev, W, b))
+
+        assert dA_prev.shape == A_prev.shape
+        assert dW.shape == W.shape
+        assert db.shape == b.shape
 
     def test_activation_backward(self):
-        assert True
+        bn = BaseNetwork()
+
+        A_prev = np.random.randn(2, 3)
+        W = np.random.randn(4, 2)
+        b = np.random.randn(4, 1)
+        A, cache = bn._activation_forward(A_prev, W, b, 'sigmoid')
+        dA = A - np.random.randn(A.shape[0], A.shape[1])
+
+        _, dW, db = bn._activation_backward(dA, cache, 'relu')
+
+        assert dW.shape == W.shape
+        assert db.shape == b.shape
 
     def test_backward_prop(self):
-        assert True
+        bn = BaseNetwork()
+
+        layer_dims = [2, 3, 2, 1]
+        params = bn._init_params(layer_dims)
+
+        y = np.array([1, 0, 1]).reshape(1, -1)
+        X = np.array([[1.0, 0.5, 0.1], [0.9, 0.67, -0.44]]).reshape(2, -1)
+
+        AL, caches = bn._forward_prop(X, params, 'relu')
+        grads = bn._backward_prop(AL, y, caches, 'relu')
+
+        assert len(grads) == 3 * (len(layer_dims) - 1)
 
     def test_upgrade_params(self):
         assert True

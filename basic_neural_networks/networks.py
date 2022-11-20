@@ -602,7 +602,3 @@ class DeepNetworkReg(DeepNetworkInit):
         self.learning_curve = np.array(costs).reshape(-1, 2)
 
         return self
-
-
-if __name__ == '__main__':
-    print('')
