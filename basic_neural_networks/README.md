@@ -56,3 +56,9 @@ See notebook [dnn_w_regularization](./dnn_w_regularization.ipynb) for example us
 ---
 
 ## Deep neural networks with optimization
+
+In [networks_w_optimization.py](./networks_w_optimization.py) is a network implemented which can perform optimization as follows:
+
+* gradient descent
+* momentum
+* Adam
