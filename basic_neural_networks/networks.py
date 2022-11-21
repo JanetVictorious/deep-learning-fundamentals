@@ -602,3 +602,21 @@ class DeepNetworkReg(DeepNetworkInit):
         self.learning_curve = np.array(costs).reshape(-1, 2)
 
         return self
+
+    def _predict(self, X):
+        """Use learned parameters for prediction.
+
+        :param X:
+            Input features array.
+        :returns:
+            Array with probabilities from last activation.
+        """
+        # Verify learned parameters exist
+        if self.params == dict():
+            err_msg = 'No learned parameters. Train model using `.call()` method.'
+            raise ValueError(err_msg)
+
+        # Forward prop with learned parameters
+        A2, _ = self._forward_prop(X, self.params, self.hidden_activation, 1.0)
+
+        return A2
