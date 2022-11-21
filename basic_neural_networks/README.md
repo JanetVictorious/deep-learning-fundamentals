@@ -52,3 +52,7 @@ Two types of regularization is available:
 * drop-out, randomly skip connections in a hidden layer
 
 See notebook [dnn_w_regularization](./dnn_w_regularization.ipynb) for example usage.
+
+---
+
+## Deep neural networks with optimization
