@@ -1,6 +1,6 @@
 # Basic neural networks
 
-These files and notebooks contain examples of the most basic approach to neural networks.
+These files and notebooks contain examples of basic approaches to neural networks.
 
 ---
 
@@ -12,7 +12,7 @@ In [logistic_model.py](./logistic_model.py) is the logic for a standard logistic
 * Sigmoid activation
 * Cost calculation
 * Backward propagation
-* Upgrade of weights and bias using gradient descent
+* Update of weights and bias using gradient descent
 
 See notebook [logistic_regression_nn_approach](./logistic_regression_nn_approach.ipynb) for example usage.
 
@@ -28,11 +28,11 @@ See notebook [one_hidden_nn](./one_hidden_nn.ipynb) for example usage. The model
 
 ## Deep neural networks
 
-In [networks.py](./networks.py) is the logic for deep neural networks implemented. Networks can be implemented with multiple layers and units by providing a variable `layer_dims`. Initialization and regularization methods are available as well.
+In [networks.py](./networks.py) is the logic for deep neural networks implemented. Networks can be implemented with multiple layers and units by providing a variable `layer_dims`. Initialization of weights and regularization methods are available as well.
 
 ### Deep network
 
-See notebook [cat_vs_nocat_dnn](./cat_vs_nocat_dnn.ipynb) for example usage of fully connected deep neural network applied on cat images.
+See notebook [cat_vs_nocat_dnn](./cat_vs_nocat_dnn.ipynb) for example usage of a fully connected deep neural network applied on cat images.
 
 ### Weight initialization
 

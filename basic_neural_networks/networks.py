@@ -350,7 +350,13 @@ class BaseNetwork:
         return y_pred
 
     def predict_proba(self, X):
-        """Predict probabilities."""
+        """Predict probabilities.
+
+        :param X:
+            Input features array.
+        :returns:
+            Array of predicted probabilities.
+        """
         return self._predict(X)
 
 
@@ -364,7 +370,17 @@ class DeepNetworkInit(BaseNetwork):
         super().__init__()
 
     def _init_params(self, layer_dims, initialization):
-        """Initialize parameters."""
+        """Initialize parameters.
+
+        :param layer_dims:
+            Layers with their nodes. First position correspond to input
+            layer X, and last layer to outpur layer y.
+        :param initialization:
+            Specify type of initialization of weights (can be any of `zero`,
+            `random`, or `he`).
+        :returns:
+            Dictionary with initialized weights and biases.
+        """
         params = dict()
         L = len(layer_dims)
 
@@ -426,6 +442,23 @@ class DeepNetworkReg(DeepNetworkInit):
         super().__init__()
 
     def _activation_forward(self, A_prev, W, b, activation, keep_prob):
+        """Activation forward.
+
+        :param A_prev:
+            Activation array from previous layer.
+        :param W:
+            Weights array of current layer.
+        :param b:
+            Bias of current layer.
+        :param activation:
+            Activation to be used in forward pass.
+        :param keep_prob:
+            Drop-out probability. If `< 1` connections will be removed in
+            layer as a regularization technique.
+        :returns:
+            Activation from current layer, cache of linear combination plus
+            forward pass.
+        """
         Z, linear_cache = self._linear_forward(A_prev, W, b)
         if activation == 'sigmoid':
             A, activation_cache = sigmoid(Z)

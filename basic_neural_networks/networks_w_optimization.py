@@ -3,6 +3,40 @@ import numpy as np
 from networks import DeepNetworkReg
 
 
+def exp_weigthed_learning_rate_decay(learning_rate, epoch_num, decay_rate):
+    """Update learning rate using exponential weight decay.
+
+    :param learning_rate:
+        Learning rate hyperprameter.
+    :param epoch_num:
+        Epoch number.
+    :param decay_rate:
+        Decay rate of learning_rate.
+    :returns:
+        Updated learning_rate.
+    """
+    lr = learning_rate / (1 + decay_rate * epoch_num)
+    return lr
+
+
+def schedule_learning_rate_decay(learning_rate, epoch_num, decay_rate, time_int=1000):
+    """Update learning rate using exponential weight decay.
+
+    :param learning_rate:
+        Learning rate hyperprameter.
+    :param epoch_num:
+        Epoch number.
+    :param decay_rate:
+        Decay rate of learning_rate.
+    :param time_int:
+        Nr of epochs where learning rate is updated.
+    :returns:
+        Updated learning_rate.
+    """
+    lr = learning_rate / (1 + decay_rate * np.floor(epoch_num / time_int))
+    return lr
+
+
 class DeepNetworkOptim(DeepNetworkReg):
     def __init__(self):
         super().__init__()
@@ -29,7 +63,7 @@ class DeepNetworkOptim(DeepNetworkReg):
         # Shuffle data
         shuffled_idx = list(np.random.permutation(m))
         X_rand = X[:, shuffled_idx]
-        y_rand = y[:, shuffled_idx].reshape(1, m)
+        y_rand = y[:, shuffled_idx].reshape((1, m))
 
         # Mini-batch size as increment
         inc = mini_batch_size
@@ -199,6 +233,8 @@ class DeepNetworkOptim(DeepNetworkReg):
              epsilon=1e-8,
              num_epochs=5000,
              learning_rate=0.01,
+             decay=None,
+             decay_rate=1.0,
              lbd=0.0,
              keep_prob=1.0,
              print_cost=False):
@@ -209,10 +245,13 @@ class DeepNetworkOptim(DeepNetworkReg):
 
         # Initialize parameters
         params = self._init_params(layer_dims, initialization)
-        m = float(X.shape[1])
-        costs = []
-        t = 0
-        seed = 1
+
+        # m = float(X.shape[1])  # Nr of training examples
+        costs = []  # Keep track of costs
+        t = 0  # Counter for Adam update
+        seed = 1  # Shuffle mini-batches same
+        learning_rate0 = learning_rate  # Original learning rate
+        lr_rates = []  # Keep track of learning rates used
 
         # Set optimization strategy
         if optimizer == 'gd':
@@ -240,24 +279,33 @@ class DeepNetworkOptim(DeepNetworkReg):
                 cost_total += cost
 
                 # Backward propagation
-                grads = self._backward_prop(AL, y, caches, hidden_activation, lbd, keep_prob)
+                grads = self._backward_prop(AL, mini_y, caches, hidden_activation, lbd, keep_prob)
 
                 # Update parameters
                 if optimizer == 'gd':
                     params = self._upgrade_params(params, grads, learning_rate)
                 elif optimizer == 'momentum':
-                    params, v = self._upgrade_params_momentum(params, grads, v, beta)
+                    params, v = self._upgrade_params_momentum(params, grads, v, beta, learning_rate)
                 elif optimizer == 'adam':
                     t += 1  # Adam counter
-                    params, v, s = self._upgrade_params_adam(params, grads, v, s, t,
-                                                             beta1, beta2, learning_rate, epsilon)
+                    params, v, s, _, _ = self._upgrade_params_adam(params, grads, v, s, t,
+                                                                   beta1, beta2, learning_rate, epsilon)
 
             # Average total cost
+            m = float(len(mini_batches))
             cost_avg = cost_total / m
+
+            # Learning rate decay
+            if decay:
+                # Append used learning rate to list
+                lr_rates.append([i, learning_rate])
+
+                # Update learning rate using exponential decay
+                learning_rate = decay(learning_rate0, i, decay_rate)
 
             # Save/Print costs
             if i % 100 == 0 or i == num_epochs - 1:
-                costs.append(cost_avg)
+                costs.append([i, cost_avg])
             if print_cost and (i % 1000 == 0 or i == num_epochs - 1):
                 print(f'Cost after epoch {i}: {cost_avg}')
 
@@ -266,3 +314,31 @@ class DeepNetworkOptim(DeepNetworkReg):
 
         # Save learning curve
         self.learning_curve = np.array(costs).reshape(-1, 2)
+
+        # Save learning rates
+        self.learning_rates = np.array(lr_rates).reshape(-1, 2)
+
+
+if __name__ == '__main__':
+    """Debugging"""
+    import sklearn.datasets as dt
+    from sklearn.model_selection import train_test_split
+
+    # Generate synthetic data
+    X, y = dt.make_classification(n_samples=2000, n_features=20, n_informative=10, n_redundant=1, random_state=42)
+
+    # Train/Test split
+    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+
+    # Transpose data
+    X_train = X_train.T
+    X_test = X_test.T
+    y_train = y_train.reshape(1, -1)
+    y_test = y_test.reshape(-1, 1)
+
+    # Instantiate model
+    model = DeepNetworkOptim()
+    layer_dims = [X_train.shape[0], 7, 5, y_train.shape[0]]
+
+    # Train
+    model.call(X_train, y_train, layer_dims)
