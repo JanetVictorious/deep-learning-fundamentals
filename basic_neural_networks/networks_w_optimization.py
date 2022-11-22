@@ -40,6 +40,7 @@ def schedule_learning_rate_decay(learning_rate, epoch_num, decay_rate, time_int=
 class DeepNetworkOptim(DeepNetworkReg):
     def __init__(self):
         super().__init__()
+        self.learning_rates = []
 
     def _mini_batches(self, X, y, mini_batch_size=64, seed=42):
         """Split data into mini-batches.
