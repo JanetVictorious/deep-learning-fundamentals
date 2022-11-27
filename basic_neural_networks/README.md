@@ -62,3 +62,6 @@ In [networks_w_optimization.py](./networks_w_optimization.py) is a network imple
 * gradient descent
 * momentum
 * Adam
+* learning rate decay
+
+See notebook [dnn_w_optimization](./dnn_w_optimization.ipynb) for example usage.
