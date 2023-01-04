@@ -9,6 +9,12 @@ def normalize_img(image, label):
     return image, label
 
 
+def one_hot_matrix(image, label, depth=2):
+    """One-hot encoding for single label."""
+    one_hot = tf.reshape(tf.one_hot(label, depth, axis=0), (depth,))
+    return image, one_hot
+
+
 class SimpleTfModel:
     def __init__(self):
         self.params = dict()
@@ -66,6 +72,7 @@ class SimpleTfModel:
         # Nr of training examples
         if isinstance(X_train, tf.data.Dataset) and not y_train and not y_test:
             m = X_train.cardinality().numpy()
+            n_x = X_train.element_spec[0].shape[0]
             if not num_classes:
                 unique_labels = set()
                 for _, label in X_train:
@@ -73,13 +80,14 @@ class SimpleTfModel:
                 num_classes = len(unique_labels)
         elif isinstance(X_train, np.ndarray) and y_train and y_test:
             m = X_train.shape[1]
+            n_x = X_train.shape[0]
             num_classes = len(set([i for i in y_train]))
         else:
             err_msg = f'Data is of type {type(X_train)} which is not compatible.'
             raise ValueError(err_msg)
 
         # Init parameters
-        params = self._init_params(input_shape=m, output_shape=num_classes)
+        params = self._init_params(input_shape=n_x, output_shape=num_classes)
 
         # Extract parameters
         W1 = params['W1']
@@ -117,6 +125,9 @@ class SimpleTfModel:
 
             for (mini_X, mini_y) in mini_batches:
                 with tf.GradientTape() as tape:
+                    # Transpose
+                    mini_X, mini_y = tf.transpose(mini_X), tf.transpose(mini_y)
+
                     # Forward propagation
                     Z3 = self._forward_prop(mini_X, params)
 
@@ -139,12 +150,14 @@ class SimpleTfModel:
             # Average cost over training examples
             epoch_cost /= m
 
-            if print_cost and epoch % 10 == 0:
-                print(f'Cost after epoch {epoch}: {epoch_cost}')
-                print(f'Train accuracy: {train_accuracy.result()}')
+            if epoch % 10 == 0 or epoch == num_epochs - 1:
+                if print_cost:
+                    print(f'Cost after epoch {epoch}: {epoch_cost}')
+                    print(f'Train accuracy: {train_accuracy.result()}')
 
                 # Evaluate test set
                 for (mini_X_test, mini_y_test) in mini_batches_test:
+                    mini_X_test, mini_y_test = tf.transpose(mini_X_test), tf.transpose(mini_y_test)
                     Z3 = self._forward_prop(mini_X_test, params)
                     test_accuracy.update_state(mini_y_test, Z3)
                 print(f'Test accuracy: {test_accuracy.result()}')
@@ -179,22 +192,24 @@ if __name__ == '__main__':
     # Print info
     print(ds_info.splits['train'].num_examples)
     print(ds_train.element_spec)
-    print(ds_info.features['label'].num_classes)
+    num_classes = ds_info.features['label'].num_classes
+    print(num_classes)
 
     # Prep data
     ds_train = ds_train.map(normalize_img, num_parallel_calls=tf.data.AUTOTUNE)
+    ds_train = ds_train.map(lambda img, lbl: one_hot_matrix(img, lbl, depth=num_classes),
+                            num_parallel_calls=tf.data.AUTOTUNE)
     ds_test = ds_test.map(normalize_img, num_parallel_calls=tf.data.AUTOTUNE)
+    ds_test = ds_test.map(lambda img, lbl: one_hot_matrix(img, lbl, depth=num_classes),
+                          num_parallel_calls=tf.data.AUTOTUNE)
     print(ds_train.element_spec)
     print(ds_test.element_spec)
     ds_train = ds_train.cache()
     ds_test = ds_test.cache()
     ds_train = ds_train.shuffle(ds_info.splits['train'].num_examples)
     ds_test = ds_test.shuffle(ds_info.splits['test'].num_examples)
-    num_classes = ds_info.features['label'].num_classes
-    # ds_train = ds_train.batch(128)
-    # ds_train = ds_train.prefetch(tf.data.AUTOTUNE)
 
     # Pass through network
     model = SimpleTfModel()
     model.call(X_train=ds_train, X_test=ds_test, num_classes=num_classes,
-               learning_rate=0.01, num_epochs=1500, minibatch_size=32, print_cost=False)
+               learning_rate=0.01, num_epochs=2, minibatch_size=32, print_cost=True)
