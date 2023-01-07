@@ -15,20 +15,21 @@ def one_hot_matrix(image, label, depth=2):
     return image, one_hot
 
 
-class SimpleTfModel:
+class SimpleTFModel:
     def __init__(self):
         self.params = dict()
+        self.learning_curve = []
         self.train_acc = []
         self.test_acc = []
 
     def _init_params(self, input_shape=12288, output_shape=6):
         """Initialize parameters for network."""
         initializer = tf.keras.initializers.GlorotNormal(seed=1)
-        W1 = tf.Variable(initializer(shape=(25, input_shape)))
-        b1 = tf.Variable(initializer(shape=(25, 1)))
-        W2 = tf.Variable(initializer(shape=(12, 25)))
-        b2 = tf.Variable(initializer(shape=(12, 1)))
-        W3 = tf.Variable(initializer(shape=(output_shape, 12)))
+        W1 = tf.Variable(initializer(shape=(20, input_shape)))
+        b1 = tf.Variable(initializer(shape=(20, 1)))
+        W2 = tf.Variable(initializer(shape=(15, 20)))
+        b2 = tf.Variable(initializer(shape=(15, 1)))
+        W3 = tf.Variable(initializer(shape=(output_shape, 15)))
         b3 = tf.Variable(initializer(shape=(output_shape, 1)))
 
         params = {'W1': W1, 'b1': b1,
@@ -69,18 +70,27 @@ class SimpleTfModel:
         train_acc = []
         test_acc = []
 
-        # Nr of training examples
         if isinstance(X_train, tf.data.Dataset) and not y_train and not y_test:
+            # Nr of training examples
             m = X_train.cardinality().numpy()
+
+            # Nr of features (pixels)
             n_x = X_train.element_spec[0].shape[0]
+
+            # Nr of classes
             if not num_classes:
                 unique_labels = set()
                 for _, label in X_train:
                     unique_labels.add(label.numpy())
                 num_classes = len(unique_labels)
         elif isinstance(X_train, np.ndarray) and y_train and y_test:
+            # Nr of training examples
             m = X_train.shape[1]
+
+            # Nr of features (pixels)
             n_x = X_train.shape[0]
+
+            # Nr of classes
             num_classes = len(set([i for i in y_train]))
         else:
             err_msg = f'Data is of type {type(X_train)} which is not compatible.'
@@ -169,6 +179,9 @@ class SimpleTfModel:
         # Save learned paramters
         self.params = params
 
+        # Save learning curve
+        self.learning_curve = np.array(costs).reshape(-1, 2)
+
         # Save results
         self.train_acc = train_acc
         self.test_acc = test_acc
@@ -210,6 +223,6 @@ if __name__ == '__main__':
     ds_test = ds_test.shuffle(ds_info.splits['test'].num_examples)
 
     # Pass through network
-    model = SimpleTfModel()
+    model = SimpleTFModel()
     model.call(X_train=ds_train, X_test=ds_test, num_classes=num_classes,
                learning_rate=0.01, num_epochs=2, minibatch_size=32, print_cost=True)

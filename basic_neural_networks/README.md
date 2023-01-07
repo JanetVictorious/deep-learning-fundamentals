@@ -67,3 +67,9 @@ In [networks_w_optimization.py](./networks_w_optimization.py) is a network imple
 In addition, all optimization methods are performed with the use of *mini-batches*, i.e. instead of iterating over the whole dataset mini-batches are generated and number of epochs decide the number of times the dataset is iterated over.
 
 See notebook [dnn_w_optimization](./dnn_w_optimization.ipynb) for example usage.
+
+---
+
+## Simple TensorFlow model
+
+In [tf_model.py](./tf_model.py) is a DNN network implemented using TensorFlow resources. The network is intended to be used on an image dataset.
