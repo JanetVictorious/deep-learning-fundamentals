@@ -72,4 +72,6 @@ See notebook [dnn_w_optimization](./dnn_w_optimization.ipynb) for example usage.
 
 ## Simple TensorFlow model
 
-In [tf_model.py](./tf_model.py) is a DNN network implemented using TensorFlow resources. The network is intended to be used on an image dataset.
+In [tf_model.py](./tf_model.py) is a DNN network implemented using resources from the TensorFlow library. The network is not taking advantage of the TensorFlow API but rather shows a similar implementation as with the previous networks and how the use of [GradientTape](https://www.tensorflow.org/api_docs/python/tf/GradientTape) allows you to only define the forward pass of the network. In addition, the network is intended to be used on an image dataset.
+
+See notebook [dnn_w_tensorflow](./dnn_w_tensorflow.ipynb) for example usage.
