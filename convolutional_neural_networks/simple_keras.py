@@ -117,6 +117,7 @@ class KerasFunctional:
         """
         self._input_shape = input_shape
         self._n_classes = n_classes
+        self.model = None
         self.history = None
 
     def _model(self) -> tf.keras.Model:
@@ -196,6 +197,7 @@ class KerasFunctional:
         # Train model
         history = model.fit(ds_train, validation_data=ds_eval, epochs=epochs)
 
+        self.model = model
         self.history = history
 
     def pd_history(self) -> tuple:
@@ -219,3 +221,13 @@ class KerasFunctional:
         df_acc = df_acc.rename(columns={'loss': 'train', 'val_loss': 'validation'})
 
         return df_loss, df_acc
+
+    def evaluate(self, ds_test) -> None:
+        """Evaluate trained model.
+
+        Args:
+            ds_test (tf.data.Dataset): Test dataset.
+
+        Returns:
+        """
+        self.model.evaluate(ds_test)
