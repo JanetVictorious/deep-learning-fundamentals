@@ -5,6 +5,7 @@ name = "pypi"
 
 [packages]
 numpy = {version=">=1.23.2"}
+pandas = {version=">=1.5.0"}
 scikit-learn = {version="~=1.0"}
 jupyterlab = {version="~=3.0"}
 matplotlib = {version="~=3.0"}
