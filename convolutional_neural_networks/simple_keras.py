@@ -105,7 +105,7 @@ class KerasSeqClassifier:
 
 
 class KerasFunctional:
-    def __init__(self, input_shape: tuple, n_classes):
+    def __init__(self, input_shape: tuple, n_classes: int):
         """Initialization of funcional Keras model.
 
         Args:
