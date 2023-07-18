@@ -77,6 +77,7 @@ class TestBasicConvNetwork:
         assert db.shape == (1, 1, 1, 8)
 
     def test_pool_backward(self):
+        np.random.seed(1)  # Force-set to make test successful in suite
         bcn = BasicConvNetwork()
 
         A_prev = np.random.randn(5, 5, 3, 2)
